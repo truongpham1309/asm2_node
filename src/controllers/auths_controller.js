@@ -11,10 +11,10 @@ const { SECRET_CODE } = process.env;
 export const registerAuth = async (req, res) => {
     try {
 
-        const { body} = req;
+        const { body } = req;
         const { error } = validationAuth.validate(req.body);
 
-        if(error){
+        if (error) {
             const errors = error.details.map(err => err.message);
 
             return res.status(404).json({
@@ -23,9 +23,9 @@ export const registerAuth = async (req, res) => {
             })
         }
 
-        const checkEmail = await Auth_model.findOne({email: req.body.email});
+        const checkEmail = await Auth_model.findOne({ email: req.body.email });
 
-        if(checkEmail){
+        if (checkEmail) {
             return res.status(404).json({
                 message: "Email da ton tai",
             })
@@ -33,17 +33,17 @@ export const registerAuth = async (req, res) => {
 
         const hashPassword = await bcryptjs.hash(password, 10);
 
-        if(hashPassword) {
+        if (!hashPassword) {
             return res.status(400).json({
                 message: "Ma hoa mat khau that bai",
             })
         }
 
-        const data = await Auth_model.create({username: body.username, password: hashPassword, email: body.email});
+        const data = await Auth_model.create({ username: body.username, password: hashPassword, email: body.email });
 
-        if(!data){
+        if (!data) {
             return res.status(404).json({
-                message: "Dan ki that bai"
+                message: "Dang ki that bai"
             })
         }
 
@@ -67,10 +67,10 @@ export const registerAuth = async (req, res) => {
 
 export const loginAuth = async (req, res) => {
     try {
-        const { body} = req;
+        const { body } = req;
         const { error } = validationAuthLogin.validate(body);
 
-        if(error){
+        if (error) {
             const errors = error.details.map(err => err.message);
 
             return res.status(404).json({
@@ -79,9 +79,9 @@ export const loginAuth = async (req, res) => {
             })
         }
 
-        const checkEmail = await Auth_model.findOne({email: req.body.email});
+        const checkEmail = await Auth_model.findOne({ email: req.body.email });
 
-        if(!checkEmail){
+        if (!checkEmail) {
             return res.status(404).json({
                 message: "Email khong dung",
             })
@@ -89,15 +89,15 @@ export const loginAuth = async (req, res) => {
 
         const checkPassword = await bcryptjs.compare(body.password, checkEmail.password);
 
-        if(!checkPassword) {
+        if (!checkPassword) {
             return res.status(404).json({
                 message: "Mat khau khong dung",
             })
         }
 
-        const token = jwt.sign({id: checkEmail._id}, SECRET_CODE, {expiresIn: "1d"});
+        const token = jwt.sign({ id: checkEmail._id }, SECRET_CODE, { expiresIn: "1d" });
 
-        if(!token){
+        if (!token) {
             return res.status(404).json({
                 message: "Tao token that bai",
             })

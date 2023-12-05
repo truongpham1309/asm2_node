@@ -9,7 +9,9 @@ const ProductsSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    desc: String,
+    desc: {
+        type: String
+    },
 }, {
     timestamps: true,
     versionKey: false
